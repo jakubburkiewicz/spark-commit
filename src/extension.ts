@@ -24,8 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
 
       const message = await generateWithClaude(diff, cwd);
-      const firstLine = message.split('\n')[0].trim();
-      vscode.window.showInformationMessage(`Spark Commit: ${firstLine}`);
+      repo.inputBox.value = message.trim();
     }
   );
 
