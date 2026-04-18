@@ -76,7 +76,10 @@ export function deactivate() {}
 function toUserMessage(err: unknown): string {
   if (err && typeof err === 'object' && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
     const path = (err as NodeJS.ErrnoException).path ?? 'required binary';
-    return `\`${path}\` not found. Install it or make sure it is on PATH.`;
+    if (path === 'git') {
+      return '`git` not found. Install Git or make sure it is on PATH.';
+    }
+    return `\`${path}\` not found. Install Claude CLI, add it to PATH, or set \`sparkCommit.cliPath\` in settings.`;
   }
   return err instanceof Error ? err.message : String(err);
 }
@@ -122,7 +125,10 @@ async function generateWithClaude(diff: string, cwd: string): Promise<string> {
     trimmedDiff,
   ].join('\n');
 
-  const { stdout } = await execFileAsync('claude', ['-p', prompt], {
+  const configured = vscode.workspace.getConfiguration('sparkCommit').get<string>('cliPath');
+  const cli = configured && configured.trim() ? configured.trim() : 'claude';
+
+  const { stdout } = await execFileAsync(cli, ['-p', prompt], {
     cwd,
     maxBuffer: 10 * 1024 * 1024,
   });
