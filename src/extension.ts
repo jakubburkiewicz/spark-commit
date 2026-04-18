@@ -61,8 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
           }
         );
       } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        vscode.window.showErrorMessage(`Spark Commit: ${msg}`);
+        vscode.window.showErrorMessage(`Spark Commit: ${toUserMessage(err)}`);
       } finally {
         generating = false;
       }
@@ -73,6 +72,14 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {}
+
+function toUserMessage(err: unknown): string {
+  if (err && typeof err === 'object' && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
+    const path = (err as NodeJS.ErrnoException).path ?? 'required binary';
+    return `\`${path}\` not found. Install it or make sure it is on PATH.`;
+  }
+  return err instanceof Error ? err.message : String(err);
+}
 
 async function getGitRepo(uri?: vscode.Uri): Promise<any> {
   const extension = vscode.extensions.getExtension('vscode.git');
