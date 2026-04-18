@@ -5,26 +5,67 @@ import { promisify } from 'util';
 const execFileAsync = promisify(execFile);
 
 const MAX_DIFF_CHARS = 8000;
+const PLACEHOLDER_FRAMES = [
+  '⏳ Generating commit message',
+  '⏳ Generating commit message.',
+  '⏳ Generating commit message..',
+  '⏳ Generating commit message...',
+];
+const PLACEHOLDER_FRAME_MS = 400;
 
 export function activate(context: vscode.ExtensionContext) {
+  let generating = false;
+
   const command = vscode.commands.registerCommand(
     'spark-commit.generate',
     async (sourceControl?: vscode.SourceControl) => {
-      const repo = await getGitRepo(sourceControl?.rootUri);
-      if (!repo) {
-        vscode.window.showErrorMessage('Spark Commit: no Git repository found in this workspace.');
-        return;
-      }
+      if (generating) return;
+      generating = true;
 
-      const cwd = repo.rootUri.fsPath;
-      const diff = await getStagedDiff(cwd);
-      if (!diff.trim()) {
-        vscode.window.showWarningMessage('Spark Commit: no staged changes. Run git add first.');
-        return;
-      }
+      try {
+        await vscode.window.withProgress(
+          {
+            location: vscode.ProgressLocation.Window,
+            title: 'Spark Commit: generating…',
+          },
+          async () => {
+            const repo = await getGitRepo(sourceControl?.rootUri);
+            if (!repo) {
+              vscode.window.showErrorMessage('Spark Commit: no Git repository found in this workspace.');
+              return;
+            }
 
-      const message = await generateWithClaude(diff, cwd);
-      repo.inputBox.value = message.trim();
+            const cwd = repo.rootUri.fsPath;
+            const diff = await getStagedDiff(cwd);
+            if (!diff.trim()) {
+              vscode.window.showWarningMessage('Spark Commit: no staged changes. Run git add first.');
+              return;
+            }
+
+            let frameIndex = 0;
+            repo.inputBox.value = PLACEHOLDER_FRAMES[0];
+            const interval = setInterval(() => {
+              frameIndex = (frameIndex + 1) % PLACEHOLDER_FRAMES.length;
+              repo.inputBox.value = PLACEHOLDER_FRAMES[frameIndex];
+            }, PLACEHOLDER_FRAME_MS);
+
+            try {
+              const message = await generateWithClaude(diff, cwd);
+              repo.inputBox.value = message.trim();
+            } catch (err) {
+              repo.inputBox.value = '';
+              throw err;
+            } finally {
+              clearInterval(interval);
+            }
+          }
+        );
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        vscode.window.showErrorMessage(`Spark Commit: ${msg}`);
+      } finally {
+        generating = false;
+      }
     }
   );
 
