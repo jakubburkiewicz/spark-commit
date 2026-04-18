@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.4] - 2026-04-18
+
+### Changed
+- Exclude `.github/**` from the packaged `.vsix` — repository metadata no longer ships with the extension.
+
 ## [0.5.3] - 2026-04-18
 
 ### Added
