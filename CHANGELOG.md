@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.5] - 2026-04-18
+
+### Added
+- Extension icon (`media/icon.png`, 256×256) rendered from the existing `sparkle.svg`. Visible in Marketplace listings and VS Code Extensions view.
+
 ## [0.5.4] - 2026-04-18
 
 ### Changed
