@@ -2,7 +2,7 @@
   "name": "spark-commit",
   "displayName": "Spark Commit",
   "description": "AI-powered git commit message generator. Currently supports Claude CLI.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "JakubBurkiewicz",
   "engines": {
     "vscode": "^1.85.0"
