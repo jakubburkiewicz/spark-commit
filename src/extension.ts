@@ -127,7 +127,13 @@ async function generateWithClaude(diff: string, cwd: string): Promise<string> {
   const cliPath = config.get<string>('cliPath');
   const cli = cliPath && cliPath.trim() ? cliPath.trim() : 'claude';
 
-  const { stdout } = await execFileAsync(cli, ['-p', prompt], {
+  const args = ['-p', prompt];
+  const model = config.get<string>('model')?.trim();
+  if (model) {
+    args.unshift('--model', model);
+  }
+
+  const { stdout } = await execFileAsync(cli, args, {
     cwd,
     maxBuffer: 10 * 1024 * 1024,
   });
