@@ -23,7 +23,7 @@
       {
         "command": "spark-commit.generate",
         "title": "Spark Commit: Generate Commit Message",
-        "icon": "$(sparkle)"
+        "icon": "media/sparkle.svg"
       }
     ],
     "menus": {
