@@ -60,6 +60,10 @@ Pierwsza linia max 72 znaki w trybie rozkazującym, bez markdownu.
 
 The VS Code Source Control panel has a built-in ✨ button, but it only works with GitHub Copilot and can't be rebound to another provider. Community alternatives exist but are small projects without audit. Spark Commit is minimal (≈150 lines of TypeScript, no runtime dependencies) — you can read the whole source before trusting it.
 
+## Support
+
+If Spark Commit saves you time, consider [sponsoring on GitHub](https://github.com/sponsors/jakubburkiewicz).
+
 ## License
 
 [MIT](./LICENSE)

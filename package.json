@@ -2,7 +2,7 @@
   "name": "spark-commit",
   "displayName": "Spark Commit",
   "description": "AI-powered git commit message generator. Currently supports Claude CLI.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publisher": "JakubBurkiewicz",
   "engines": {
     "vscode": "^1.85.0"
@@ -10,6 +10,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/jakubburkiewicz/spark-commit.git"
+  },
+  "sponsor": {
+    "url": "https://github.com/sponsors/jakubburkiewicz"
   },
   "license": "MIT",
   "categories": [
