@@ -117,16 +117,15 @@ async function generateWithClaude(diff: string, cwd: string): Promise<string> {
   const trimmedDiff =
     diff.length > MAX_DIFF_CHARS ? diff.slice(0, MAX_DIFF_CHARS) + '\n... (diff truncated)' : diff;
 
-  const prompt = [
-    'Generate a concise git commit message for the following staged diff.',
-    'Use imperative mood. First line max 72 characters. No markdown, no backticks.',
-    'If the change is complex, add a blank line and a short body.',
-    '',
-    trimmedDiff,
-  ].join('\n');
+  const config = vscode.workspace.getConfiguration('sparkCommit');
 
-  const configured = vscode.workspace.getConfiguration('sparkCommit').get<string>('cliPath');
-  const cli = configured && configured.trim() ? configured.trim() : 'claude';
+  const template = config.get<string>('prompt') ?? '';
+  const prompt = template.includes('{diff}')
+    ? template.replace('{diff}', trimmedDiff)
+    : `${template}\n\n${trimmedDiff}`;
+
+  const cliPath = config.get<string>('cliPath');
+  const cli = cliPath && cliPath.trim() ? cliPath.trim() : 'claude';
 
   const { stdout } = await execFileAsync(cli, ['-p', prompt], {
     cwd,

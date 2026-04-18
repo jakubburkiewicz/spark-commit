@@ -2,7 +2,7 @@
   "name": "spark-commit",
   "displayName": "Spark Commit",
   "description": "AI-powered git commit message generator. Currently supports Claude CLI.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "JakubBurkiewicz",
   "engines": {
     "vscode": "^1.85.0"
@@ -42,6 +42,12 @@
           "type": "string",
           "default": "",
           "markdownDescription": "Absolute path to the Claude CLI binary. Leave empty to use `claude` from PATH. Useful when VS Code doesn't inherit PATH from your shell."
+        },
+        "sparkCommit.prompt": {
+          "type": "string",
+          "editPresentation": "multilineText",
+          "default": "Generate a concise git commit message for the following staged diff.\nUse imperative mood. First line max 72 characters. No markdown, no backticks.\nIf the change is complex, add a blank line and a short body.\n\n{diff}",
+          "markdownDescription": "Prompt template passed to Claude. Use `{diff}` as a placeholder for the staged diff. If `{diff}` is missing, the diff is appended at the end."
         }
       }
     }
