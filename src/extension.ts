@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { execFile } from 'child_process';
+import * as path from 'path';
 import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
@@ -90,19 +91,41 @@ async function getGitRepo(uri?: vscode.Uri): Promise<any> {
   const exports = extension.isActive ? extension.exports : await extension.activate();
   const api = exports.getAPI(1);
 
-  const candidates: (vscode.Uri | undefined)[] = [
-    uri,
-    vscode.window.activeTextEditor?.document.uri,
-    vscode.workspace.workspaceFolders?.[0]?.uri,
-  ];
-
-  for (const candidate of candidates) {
-    if (!candidate) continue;
-    const repo = api.getRepository(candidate);
+  if (uri) {
+    const repo = api.getRepository(uri);
     if (repo) return repo;
   }
 
-  return api.repositories[0];
+  if (api.repositories.length === 0) return undefined;
+  if (api.repositories.length === 1) return api.repositories[0];
+
+  const activeUri = vscode.window.activeTextEditor?.document.uri;
+  if (activeUri) {
+    const repo = api.getRepository(activeUri);
+    if (repo) return repo;
+  }
+
+  return pickRepo(api.repositories);
+}
+
+async function pickRepo(repos: any[]): Promise<any | undefined> {
+  const items = repos.map((repo) => {
+    const root = repo.rootUri.fsPath as string;
+    const branch = repo.state?.HEAD?.name as string | undefined;
+    return {
+      label: path.basename(root),
+      description: branch ? `$(git-branch) ${branch}` : undefined,
+      detail: root,
+      repo,
+    };
+  });
+
+  const picked = await vscode.window.showQuickPick(items, {
+    placeHolder: 'Select repository for Spark Commit',
+    matchOnDetail: true,
+  });
+
+  return picked?.repo;
 }
 
 async function getStagedDiff(cwd: string): Promise<string> {
