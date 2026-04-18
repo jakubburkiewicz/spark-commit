@@ -12,6 +12,15 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "spark-commit.generate",
+        "title": "Spark Commit: Generate Commit Message",
+        "icon": "$(sparkle)"
+      }
+    ]
+  },
   "scripts": {
     "compile": "tsc",
     "watch": "tsc --watch",
