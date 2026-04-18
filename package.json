@@ -24,7 +24,16 @@
         "title": "Spark Commit: Generate Commit Message",
         "icon": "$(sparkle)"
       }
-    ]
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "spark-commit.generate",
+          "when": "scmProvider == git",
+          "group": "navigation"
+        }
+      ]
+    }
   },
   "scripts": {
     "compile": "tsc",
