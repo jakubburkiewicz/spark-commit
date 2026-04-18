@@ -2,7 +2,7 @@
 
 AI-powered git commit message generator for VS Code. Click the ✨ button in the Source Control panel and let [Claude Code](https://claude.com/claude-code) draft your commit message from the staged diff.
 
-The extension stays local — your diff never leaves the machine except through the Claude CLI call, which uses your own account and credentials.
+Spark Commit adds no proxy, no telemetry, and no third-party collection of its own. Your staged diff flows from VS Code to the Claude CLI on your machine, which then sends it to Anthropic under your own account — the same data path `claude` uses when you run it in a terminal.
 
 ## Requirements
 

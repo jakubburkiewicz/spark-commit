@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.6] - 2026-04-18
+
+### Changed
+- Clarify README privacy language. Previous phrasing ("your diff never leaves the machine except through the Claude CLI call") could be misread as "fully offline". The new wording is explicit: the diff does go to Anthropic via the local Claude CLI, and what Spark Commit specifically avoids is any proxy, telemetry, or third-party collection on top of that.
+
 ## [0.5.5] - 2026-04-18
 
 ### Added
