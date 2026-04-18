@@ -4,6 +4,8 @@ import { promisify } from 'util';
 
 const execFileAsync = promisify(execFile);
 
+const MAX_DIFF_CHARS = 8000;
+
 export function activate(context: vscode.ExtensionContext) {
   const command = vscode.commands.registerCommand(
     'spark-commit.generate',
@@ -14,13 +16,16 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const diff = await getStagedDiff(repo.rootUri.fsPath);
+      const cwd = repo.rootUri.fsPath;
+      const diff = await getStagedDiff(cwd);
       if (!diff.trim()) {
         vscode.window.showWarningMessage('Spark Commit: no staged changes. Run git add first.');
         return;
       }
 
-      vscode.window.showInformationMessage(`Spark Commit: read ${diff.length} chars of staged diff.`);
+      const message = await generateWithClaude(diff, cwd);
+      const firstLine = message.split('\n')[0].trim();
+      vscode.window.showInformationMessage(`Spark Commit: ${firstLine}`);
     }
   );
 
@@ -52,6 +57,25 @@ async function getGitRepo(uri?: vscode.Uri): Promise<any> {
 
 async function getStagedDiff(cwd: string): Promise<string> {
   const { stdout } = await execFileAsync('git', ['diff', '--staged'], {
+    cwd,
+    maxBuffer: 10 * 1024 * 1024,
+  });
+  return stdout;
+}
+
+async function generateWithClaude(diff: string, cwd: string): Promise<string> {
+  const trimmedDiff =
+    diff.length > MAX_DIFF_CHARS ? diff.slice(0, MAX_DIFF_CHARS) + '\n... (diff truncated)' : diff;
+
+  const prompt = [
+    'Generate a concise git commit message for the following staged diff.',
+    'Use imperative mood. First line max 72 characters. No markdown, no backticks.',
+    'If the change is complex, add a blank line and a short body.',
+    '',
+    trimmedDiff,
+  ].join('\n');
+
+  const { stdout } = await execFileAsync('claude', ['-p', prompt], {
     cwd,
     maxBuffer: 10 * 1024 * 1024,
   });
